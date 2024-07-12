@@ -44,7 +44,7 @@ class Ui_Dialog(object):
             self.item8 =table.cell(7, 1).text = self.buydatelineEdit.text()
             self.item9 =table.cell(8, 1).text = self.descriptionplainTextEdit.toPlainText()
 
-            doc.save(output_path)
+
             DB_PATH = settings.DB_PATH  # bezvremennoe reshenie
             VetDbConnnection = QSqlDatabase.addDatabase("QSQLITE")
             VetDbConnnection.setDatabaseName(DB_PATH)
@@ -52,10 +52,11 @@ class Ui_Dialog(object):
             VetTableQuery = QSqlQuery()
 
             # print(self.otdeLineEdit.text())
-            today = datetime.now().strftime("%d.%m.%Y")
-            now = datetime.now().strftime("%H:%M:%S")
+            today = datetime.now().strftime("%d %m %Y")
+            now = datetime.now().strftime("%H %M %S")
             uid = today+" "+now
 
+            doc.save(output_path+uid+'.docx')
 
             sql_query = (
                 f"INSERT INTO otchet (date,customer, address,telephone, worktype,name,various,buydate,description, uid) VALUES"
