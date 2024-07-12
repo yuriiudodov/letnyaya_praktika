@@ -52,14 +52,23 @@ class Ui_Dialog(object):
             VetTableQuery = QSqlQuery()
 
             # print(self.otdeLineEdit.text())
+            today = datetime.now().strftime("%d.%m.%Y")
+            now = datetime.now().strftime("%H:%M:%S")
+            uid = today+" "+now
+
+
             sql_query = (
-                f"INSERT INTO otchet (date,customer, address,telephone, worktype,name,various,buydate,description) VALUES"
-                f" ('{self.item1}','{self.item2}','{self.item3}','{self.item4}','{self.item5}','{self.item6}','{self.item7}','{self.item8}','{self.item9}')  ")
+                f"INSERT INTO otchet (date,customer, address,telephone, worktype,name,various,buydate,description, uid) VALUES"
+                f" ('{self.item1}','{self.item2}','{self.item3}','{self.item4}','{self.item5}','{self.item6}','{self.item7}','{self.item8}','{self.item9}','{uid}')  ")
             print(sql_query)
 
             VetTableQuery.prepare(sql_query)
             ass = VetTableQuery.exec()
             print("uspeh&", ass)
+
+
+
+            VetDbConnnection.close()
             # Выполняем запрос с параметром
 
 
@@ -127,12 +136,13 @@ class Ui_Dialog(object):
         self.label_8.setObjectName(u"label_8")
         self.label_8.setGeometry(QRect(10, 450, 411, 26))
         self.label_8.setFont(font)
+
         self.datelineEdit = QLineEdit(Dialog)
         self.datelineEdit.setObjectName(u"datelineEdit")
         self.datelineEdit.setGeometry(QRect(70, 50, 211, 21))
-        today = datetime.now()
-        date = today.strftime("%d.%m.%Y")
-        self.datelineEdit.setText(date)
+        today = datetime.now().strftime("%d.%m.%Y")
+        self.datelineEdit.setText(today)
+
         self.label_9 = QLabel(Dialog)
         self.label_9.setObjectName(u"label_9")
         self.label_9.setGeometry(QRect(10, 500, 241, 26))
