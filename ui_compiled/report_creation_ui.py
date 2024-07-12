@@ -16,33 +16,57 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
+from PySide6.QtSql import QSqlQuery, QSqlDatabase
 from PySide6.QtWidgets import (QApplication, QDialog, QLabel, QLineEdit,
     QPlainTextEdit, QPushButton, QSizePolicy, QWidget)
 from docx import Document
 from datetime import datetime
+from sqlalchemy import create_engine, text
+from settings import DB_PATH
+from ui_compiled import settings
+
+
 class Ui_Dialog(object):
-    def debug_replace(self,template_path, output_path, data):
+    def save_report_to_db(self):
+        print("report saved")
+        # bezvremennoe reshenie
+
+    def debug_replace(self,template_path, output_path):
         doc = Document(template_path)
         for table in doc.tables:
-            table.cell(0, 1).text = self.datelineEdit.text()
-            table.cell(1, 1).text = self.customerlineEdit.text()
-            table.cell(2, 1).text = self.customerAddresslineEdit.text()
-            table.cell(3, 1).text = self.phonelineEdit.text()
-            table.cell(4, 1).text = self.workTypelineEdit.text()
-            table.cell(5, 1).text = self.namelineEdit.text()
-            table.cell(6, 1).text = self.variouslineEdit.text()
-            table.cell(7, 1).text = self.buydatelineEdit.text()
-            table.cell(8, 1).text = self.descriptionplainTextEdit.toPlainText()
+            self.item1=table.cell(0, 1).text = self.datelineEdit.text()
+            self.item2 =table.cell(1, 1).text = self.customerlineEdit.text()
+            self.item3 =table.cell(2, 1).text = self.customerAddresslineEdit.text()
+            self.item4 =table.cell(3, 1).text = self.phonelineEdit.text()
+            self.item5 =table.cell(4, 1).text = self.workTypelineEdit.text()
+            self.item6 =table.cell(5, 1).text = self.namelineEdit.text()
+            self.item7 =table.cell(6, 1).text = self.variouslineEdit.text()
+            self.item8 =table.cell(7, 1).text = self.buydatelineEdit.text()
+            self.item9 =table.cell(8, 1).text = self.descriptionplainTextEdit.toPlainText()
 
             doc.save(output_path)
+            DB_PATH = settings.DB_PATH  # bezvremennoe reshenie
+            VetDbConnnection = QSqlDatabase.addDatabase("QSQLITE")
+            VetDbConnnection.setDatabaseName(DB_PATH)
+            VetDbConnnection.open()
+            VetTableQuery = QSqlQuery()
+
+            # print(self.otdeLineEdit.text())
+            sql_query = (
+                f"INSERT INTO otchet (date,customer, address,telephone, worktype,name,various,buydate,description) VALUES"
+                f" ('{self.item1}','{self.item2}','{self.item3}','{self.item4}','{self.item5}','{self.item6}','{self.item7}','{self.item8}','{self.item9}')  ")
+            print(sql_query)
+
+            VetTableQuery.prepare(sql_query)
+            ass = VetTableQuery.exec()
+            print("uspeh&", ass)
+            # Выполняем запрос с параметром
+
 
             #table.cell(8, 1).text = "problem"
     def save_report(self):
-        data = {
-            "date_placeholder": "1488"
-        }
-
-        self.debug_replace("C:\MHAD\zaya.docx", "C:\MHAD\zayavka.docx", data)
+        self.debug_replace("C:\MHAD\zaya.docx", "C:\MHAD\zayavka.docx")#pyti tyt
+        self.save_report_to_db()
         print("хуйняяяя")
     def setupUi(self, Dialog):
         if not Dialog.objectName():
