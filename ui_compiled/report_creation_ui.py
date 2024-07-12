@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -
+import datetime
 
 ################################################################################
 ## Form generated from reading UI file 'report_creation.ui'
@@ -18,8 +19,30 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
 from PySide6.QtWidgets import (QApplication, QDialog, QLabel, QLineEdit,
     QPlainTextEdit, QPushButton, QSizePolicy, QWidget)
 from docx import Document
+from datetime import datetime
 class Ui_Dialog(object):
+    def debug_replace(self,template_path, output_path, data):
+        doc = Document(template_path)
+        for table in doc.tables:
+            table.cell(0, 1).text = self.datelineEdit.text()
+            table.cell(1, 1).text = self.customerlineEdit.text()
+            table.cell(2, 1).text = self.customerAddresslineEdit.text()
+            table.cell(3, 1).text = self.phonelineEdit.text()
+            table.cell(4, 1).text = self.workTypelineEdit.text()
+            table.cell(5, 1).text = self.namelineEdit.text()
+            table.cell(6, 1).text = self.variouslineEdit.text()
+            table.cell(7, 1).text = self.buydatelineEdit.text()
+            table.cell(8, 1).text = self.descriptionplainTextEdit.toPlainText()
+
+            doc.save(output_path)
+
+            #table.cell(8, 1).text = "problem"
     def save_report(self):
+        data = {
+            "date_placeholder": "1488"
+        }
+
+        self.debug_replace("C:\MHAD\zaya.docx", "C:\MHAD\zayavka.docx", data)
         print("хуйняяяя")
     def setupUi(self, Dialog):
         if not Dialog.objectName():
@@ -83,6 +106,9 @@ class Ui_Dialog(object):
         self.datelineEdit = QLineEdit(Dialog)
         self.datelineEdit.setObjectName(u"datelineEdit")
         self.datelineEdit.setGeometry(QRect(70, 50, 211, 21))
+        today = datetime.now()
+        date = today.strftime("%d.%m.%Y")
+        self.datelineEdit.setText(date)
         self.label_9 = QLabel(Dialog)
         self.label_9.setObjectName(u"label_9")
         self.label_9.setGeometry(QRect(10, 500, 241, 26))
