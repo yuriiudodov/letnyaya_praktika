@@ -57,10 +57,10 @@ class Ui_Dialog(object):
             uid = today+" "+now
 
             doc.save(output_path+uid+'.docx')
-
+            path = output_path+uid+'.docx'
             sql_query = (
-                f"INSERT INTO otchet (date,customer, address,telephone, worktype,name,various,buydate,description, uid) VALUES"
-                f" ('{self.item1}','{self.item2}','{self.item3}','{self.item4}','{self.item5}','{self.item6}','{self.item7}','{self.item8}','{self.item9}','{uid}')  ")
+                f"INSERT INTO otchet (date,customer, address,telephone, worktype,name,various,buydate,description, uid, path) VALUES"
+                f" ('{self.item1}','{self.item2}','{self.item3}','{self.item4}','{self.item5}','{self.item6}','{self.item7}','{self.item8}','{self.item9}','{uid}', '{path}')  ")
             print(sql_query)
 
             VetTableQuery.prepare(sql_query)
