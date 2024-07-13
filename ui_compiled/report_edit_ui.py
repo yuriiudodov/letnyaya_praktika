@@ -121,7 +121,7 @@ class Ui_Dialog(object):
 
             #table.cell(8, 1).text = "problem"
     def save_report(self):
-        self.debug_replace("C:\MHAD\zaya.docx", "C:\MHAD\zayavka.docx")#pyti tyt
+        self.debug_replace(settings.SAVE_DIR, "C:\MHAD\zayavka.docx")#pyti tyt
         self.save_report_to_db()
         print("хуйняяяя")
     def setupUi(self, Dialog):
