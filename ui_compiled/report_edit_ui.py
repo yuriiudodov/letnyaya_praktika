@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -
 import datetime
 
+import pandas as pd
 ################################################################################
 ## Form generated from reading UI file 'report_creation.ui'
 ##
@@ -27,7 +28,52 @@ from ui_compiled import settings
 
 
 class Ui_Dialog(object):
+    def transfer_pk(self, transferrable_pk):
+        self.pk = transferrable_pk
+    def load_report(self):
+        DB_PATH = settings.DB_PATH
+        vet_db_connection = create_engine(f'sqlite:///{DB_PATH}').connect()
+        data_for_table = pd.read_sql(text(f'SELECT * FROM otchet WHERE pk = {self.pk}'), vet_db_connection).astype(str)
+        print(data_for_table)
+        #vot tyt pihat
+        self.datelineEdit.setText( data_for_table.iloc[0][1])
+        self.customerlineEdit.setText(data_for_table.iloc[0][2])
+        self.customerAddresslineEdit.setText(data_for_table.iloc[0][3])
+        self.phonelineEdit.setText(data_for_table.iloc[0][4])
+        self.workTypelineEdit.setText(data_for_table.iloc[0][5])
+        self.namelineEdit.setText(data_for_table.iloc[0][6])
+        self.variouslineEdit.setText(data_for_table.iloc[0][7])
+        self.buydatelineEdit.setText(data_for_table.iloc[0][8])
+        self.descriptionplainTextEdit.setPlainText(data_for_table.iloc[0][9])
     def save_report_to_db(self):
+        DB_PATH = settings.DB_PATH  # bezvremennoe reshenie
+        VetDbConnnection = QSqlDatabase.addDatabase("QSQLITE")
+        VetDbConnnection.setDatabaseName(DB_PATH)
+        VetDbConnnection.open()
+        VetTableQuery = QSqlQuery()
+
+        # print(self.otdeLineEdit.text())
+        data_for_table = pd.read_sql(text(f'SELECT * FROM otchet WHERE pk = {self.pk}'), VetDbConnnection).astype(str)
+
+        doc= Document(data_for_table.iloc[0][11])
+
+        doc.save(data_for_table.iloc[0][11])  # document save
+
+        sql_query = (
+            f"INSERT INTO otchet (date,customer, address,telephone, worktype,name,various,buydate,description) VALUES"
+            f" ('{self.item1}','{self.item2}','{self.item3}','{self.item4}','{self.item5}','{self.item6}','{self.item7}','{self.item8}','{self.item9}') WHERE pk = '{self.pk}'  ")
+        print(sql_query)
+
+        VetTableQuery.prepare(sql_query)
+        ass = VetTableQuery.exec()
+        print("uspeh&", ass)
+
+        VetDbConnnection.close()
+
+        #=====================================================================
+
+        #=====================================================================
+
         print("report saved")
         # bezvremennoe reshenie
 
@@ -157,6 +203,8 @@ class Ui_Dialog(object):
         self.cancelPushButton = QPushButton(Dialog)
         self.cancelPushButton.setObjectName(u"cancelPushButton")
         self.cancelPushButton.setGeometry(QRect(730, 620, 121, 61))
+
+        self.load_report()
 
         self.retranslateUi(Dialog)
 

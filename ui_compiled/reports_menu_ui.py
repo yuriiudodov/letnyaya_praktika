@@ -15,11 +15,57 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
+from PySide6.QtSql import QSqlDatabase, QSqlQuery
 from PySide6.QtWidgets import (QApplication, QDialog, QHeaderView, QLabel,
     QPushButton, QSizePolicy, QTableWidget, QTableWidgetItem,
     QWidget)
+from sqlalchemy import text, create_engine
+
+from ui_compiled import report_edit_ui, settings
+from ui_compiled.settings import DB_PATH
+import pandas as pd
 
 class Ui_Dialog(object):
+    def report_delete(self):
+        DB_PATH = settings.DB_PATH  # bezvremennoe reshenie
+        VetDbConnnection = QSqlDatabase.addDatabase("QSQLITE")
+        VetDbConnnection.setDatabaseName(DB_PATH)
+        VetDbConnnection.open()
+        VetTableQuery = QSqlQuery()
+        sql_query = (f"DELETE FROM otchet WHERE pk ={self.tableWidget.item(self.tableWidget.currentRow(), 0).text()}")
+        print(sql_query)
+
+        VetTableQuery.prepare(sql_query)
+        ass = VetTableQuery.exec()
+        print("uspeh&", ass)
+
+        VetDbConnnection.close()
+        self.fill_reports_table()
+    def open_report_edit(self):
+        self.window = QDialog()
+        self.ui = report_edit_ui.Ui_Dialog()
+
+        self.ui.transfer_pk(self.tableWidget.item(self.tableWidget.currentRow(),0).text())
+
+        self.ui.setupUi(self.window)
+        self.window.show()
+    def fill_reports_table(self):#fill example
+        # loads the table
+
+        TABLE_ROW_LIMIT = 10
+        # -----------------cities_table------------------------
+        vet_db_connection = create_engine(f'sqlite:///{DB_PATH}').connect()
+
+        pandas_SQL_query = f'SELECT * FROM otchet'
+
+        data_for_table = pd.read_sql(text(pandas_SQL_query), vet_db_connection).astype(str)
+        self.tableWidget.setColumnCount(12)
+        self.tableWidget.setRowCount(len(data_for_table))
+
+        for col_num in range(len(data_for_table.columns)):
+            for row_num in range(0, len(data_for_table)):
+                self.tableWidget.setItem(row_num, col_num,
+                                             QTableWidgetItem(data_for_table.iloc[row_num, col_num]))
     def setupUi(self, Dialog):
         if not Dialog.objectName():
             Dialog.setObjectName(u"Dialog")
@@ -33,15 +79,17 @@ class Ui_Dialog(object):
         font = QFont()
         font.setPointSize(14)
         self.label.setFont(font)
-        self.openPushButton = QPushButton(Dialog)
+        self.openPushButton = QPushButton(Dialog, clicked = lambda:self.open_report_edit())
         self.openPushButton.setObjectName(u"openPushButton")
         self.openPushButton.setGeometry(QRect(10, 540, 141, 51))
         self.cancelPpushButton = QPushButton(Dialog)
         self.cancelPpushButton.setObjectName(u"cancelPpushButton")
         self.cancelPpushButton.setGeometry(QRect(500, 540, 121, 51))
-        self.deletePushButton = QPushButton(Dialog)
+        self.deletePushButton = QPushButton(Dialog, clicked = lambda:self.report_delete())
         self.deletePushButton.setObjectName(u"deletePushButton")
         self.deletePushButton.setGeometry(QRect(170, 540, 141, 51))
+        self.fill_reports_table()
+        self.fill_reports_table()
 
         self.retranslateUi(Dialog)
 
